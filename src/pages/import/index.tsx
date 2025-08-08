@@ -1,16 +1,19 @@
 import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import { useState } from "react";
-import { Button, Toast, TextArea } from "@nutui/nutui-react-taro";
+import { Button } from "@nutui/nutui-react-taro";
+import { Textarea } from "@tarojs/components";
 
 export default function UploadPage() {
   const [result, setResult] = useState("");
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMsg, setToastMsg] = useState("");
 
+  // 替换showToast函数，调用Taro原生Toast
   const showToast = (msg: string, type: "success" | "fail" = "success") => {
-    setToastMsg(msg);
-    setToastVisible(true);
+    Taro.showToast({
+      title: msg,
+      icon: type === "success" ? "success" : "none",
+      duration: 2000,
+    });
   };
 
   const handleUpload = async () => {
@@ -86,16 +89,18 @@ export default function UploadPage() {
           >
             📄 解析结果：
           </Text>
-          <TextArea disabled value={result} />
+          <Textarea
+            disabled
+            value={result}
+            style={{
+              minHeight: 100,
+              width: "100%",
+              border: "1px solid #ccc",
+              padding: "8px",
+            }}
+          />
         </View>
       )}
-
-      <Toast
-        visible={toastVisible}
-        type="text"
-        content={toastMsg}
-        onClose={() => setToastVisible(false)}
-      />
     </View>
   );
 }

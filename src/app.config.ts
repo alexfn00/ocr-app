@@ -1,7 +1,10 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index',
-    'pages/import/index'
+    'pages/import/index',
+    'pages/login/index',
+    'pages/profile/index',
+    'pages/user-admin/index'
   ],
   window: {
     backgroundTextStyle: 'light',
@@ -22,6 +25,12 @@ export default defineAppConfig({
         text: "导入",
         iconPath: "assets/upload.png",
         selectedIconPath: "assets/upload-active.png"
+      },
+      {
+        pagePath: "pages/profile/index",
+        text: "我的",
+        iconPath: "assets/profile.png",
+        selectedIconPath: "assets/profile-active.png"
       }
     ],
     color: "#999",

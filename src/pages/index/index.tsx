@@ -1,17 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Taro from "@tarojs/taro";
 import { Text, View } from "@tarojs/components";
-import {
-  Button,
-  ConfigProvider,
-  TextArea,
-  Dialog,
-  Input,
-  Card,
-  InputNumber,
-} from "@nutui/nutui-react-taro";
+import { Button, Input } from "@nutui/nutui-react-taro";
 
 import "./index.scss";
+import { useAuthGuard } from "src/hooks/useAuthGuard";
 function Index() {
   const [text, setText] = useState("");
   const [isbnInput, setIsbnInput] = useState("978-7-5086-7635");
@@ -23,6 +16,7 @@ function Index() {
   const [badCount, setBadCount] = useState("");
   const [returnList, setReturnList] = useState<any[]>([]);
 
+  useAuthGuard();
   const handleOcrClick = () => {
     Taro.showModal({
       title: "图片识别说明",
