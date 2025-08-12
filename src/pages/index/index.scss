@@ -108,6 +108,46 @@
     }
   }
 
+  .book-inputs {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 16px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+
+  Text {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: #333;
+    margin-right: 8px;
+  }
+
+  Input {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fafafa;
+  }
+
+  Input:focus {
+      border-color: #1890ff;
+      background-color: #fff;
+    }
+  }
+
+  button {
+    margin-top: 8px;
+  }
+
+
   @media (max-width: 480px) {
     .isbn-input-group {
       flex-direction: column;

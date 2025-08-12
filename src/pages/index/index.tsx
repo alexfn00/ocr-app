@@ -6,6 +6,21 @@ import { Button, Input } from "@nutui/nutui-react-taro";
 import "./index.scss";
 import { useAuthGuard } from "src/hooks/useAuthGuard";
 
+const NumberInput = ({ label, placeholder, value, onChange }) => (
+  <View className="input-group">
+    <Text>{label}</Text>
+    <Input
+      type="number"
+      placeholder={placeholder}
+      value={String(value)}
+      onChange={(val) => {
+        if (/^\d*$/.test(val)) {
+          onChange(val);
+        }
+      }}
+    />
+  </View>
+);
 
 function Index() {
   const [text, setText] = useState("");
@@ -197,6 +212,52 @@ function Index() {
       });
     }
   };
+  // 在组件内部定义一个函数
+  const handleAddToReturnList = () => {
+    if (selectedBookIndex === null) return;
+
+    if (!goodCount && !badCount) {
+      Taro.showToast({
+        title: "请输入数量",
+        icon: "error",
+      });
+      return;
+    }
+
+    const book = books[selectedBookIndex];
+    const item = {
+      isbn: book.ISBN,
+      goodCount: goodCount,
+      badCount: badCount,
+    };
+
+    setReturnList([...returnList, item]);
+    setSelectedBookIndex(null);
+    setGoodCount("");
+    setBadCount("");
+
+    Taro.showToast({
+      title: "添加成功",
+      icon: "success",
+    });
+  };
+
+  const handleGenerateExcel = () => {
+    if (returnList.length === 0) {
+      Taro.showToast({
+        title: "退货单为空，请先添加图书",
+        icon: "error",
+      });
+      return;
+    }
+    // 调用生成函数
+    generateExcel(returnList);
+
+    // generateExcel([
+    //   { isbn: "9787513295987", goodCount: 15, badCount: 1 },
+    //   { isbn: "9787513291729", goodCount: 10, badCount: 0 },
+    // ]);
+  };
 
   return (
     <View className="container">
@@ -256,76 +317,26 @@ function Index() {
 
       {selectedBookIndex !== null && (
         <View className="book-inputs">
-          <View className="input-group">
-            <Text>好书数量：</Text>
-            <Input
-              type="number"
-              placeholder="请输入好书数量"
-              value={String(goodCount)}
-              onChange={(val) => {
-                if (/^\d*$/.test(val)) {
-                  setGoodCount(val);
-                }
-              }}
-            />
-          </View>
-          <View className="input-group">
-            <Text>残书数量：</Text>
-            <Input
-              type="number"
-              placeholder="请输入残书数量"
-              value={String(badCount)}
-              onChange={(val) => {
-                if (/^\d*$/.test(val)) {
-                  setBadCount(val);
-                }
-              }}
-            />
-          </View>
-          <Button
-            type="primary"
-            block
-            onClick={() => {
-              if (!goodCount && !badCount) {
-                Taro.showToast({
-                  title: "请输入数量",
-                  icon: "error",
-                });
-                return;
-              }
-              const book = books[selectedBookIndex];
-              const item = {
-                title: book.书名,
-                author: book.作者,
-                isbn: book.ISBN,
-                normalCount: goodCount,
-                damagedCount: badCount,
-              };
-              setReturnList([...returnList, item]);
-              setSelectedBookIndex(null);
-              setGoodCount("");
-              setBadCount("");
-              Taro.showToast({
-                title: "添加成功",
-                icon: "success",
-              });
-            }}
-          >
+          <NumberInput
+            label="好书数量："
+            placeholder="请输入好书数量"
+            value={goodCount}
+            onChange={setGoodCount}
+          />
+          <NumberInput
+            label="残书数量："
+            placeholder="请输入残书数量"
+            value={badCount}
+            onChange={setBadCount}
+          />
+          <Button type="primary" block onClick={handleAddToReturnList}>
             添加到退货单
           </Button>
         </View>
       )}
+
       <View className="section">
-        <Button
-          type="primary"
-          block
-          onClick={() => {
-            generateExcel([
-              { isbn: "9787535435828", goodCount: 15, badCount: 1 },
-              { isbn: "9781234567890", goodCount: 10, badCount: 0 },
-            ]);
-          }}
-        >
+        <Button type="primary" block onClick={handleGenerateExcel}>
           生成文件并下载
         </Button>
       </View>
