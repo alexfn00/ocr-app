@@ -1,0 +1,44 @@
+.user-edit-page {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f7f8fa;
+
+  .input-group {
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .nut-input {
+    background: #f7f8fa;
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+
+  .picker-trigger {
+    padding: 10px 0;
+
+    .nut-cell__title {
+      color: #333;
+    }
+  }
+
+  .nut-button {
+    margin-top: 30px;
+    border-radius: 8px;
+
+    &--default {
+      background: #f7f8fa;
+      color: #333;
+    }
+  }
+}

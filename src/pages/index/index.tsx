@@ -5,6 +5,8 @@ import { Button, Input } from "@nutui/nutui-react-taro";
 
 import "./index.scss";
 import { useAuthGuard } from "src/hooks/useAuthGuard";
+
+
 function Index() {
   const [text, setText] = useState("");
   const [isbnInput, setIsbnInput] = useState("978-7-5086-7635");
@@ -107,6 +109,92 @@ function Index() {
       console.error("查询异常:", err);
     } finally {
       Taro.hideLoading();
+    }
+  };
+
+  interface CloudFunctionResponse {
+    success: boolean;
+    message?: string;
+
+    /**
+     * 云文件ID（cloud:// 开头），优先级高于 downloadUrl
+     * @example "cloud://prod-7g1d2.7072-prod/file.xlsx"
+     */
+    fileID?: string;
+
+    /**
+     * 兼容旧版的HTTP下载链接（当fileID不存在时使用）
+     * @deprecated 建议迁移到fileID方式
+     */
+    downloadUrl?: string;
+  }
+
+  // 类型守卫方法
+  function isCloudFileResponse(
+    res: CloudFunctionResponse
+  ): res is CloudFunctionResponse & { fileID: string } {
+    return typeof res.fileID === "string" && res.fileID.startsWith("cloud://");
+  }
+
+  function isHttpUrlResponse(
+    res: CloudFunctionResponse
+  ): res is CloudFunctionResponse & { downloadUrl: string } {
+    return (
+      typeof res.downloadUrl === "string" &&
+      /^https?:\/\//.test(res.downloadUrl)
+    );
+  }
+
+  // 更新后的函数实现
+  const generateExcel = async (
+    items: { isbn: string; goodCount: number; badCount: number }[]
+  ) => {
+    try {
+      const res = await Taro.cloud.callFunction({
+        name: "generateReturnExcel",
+        data: { items },
+      });
+
+      const result = res.result as CloudFunctionResponse;
+      console.log("result", result);
+      if (!result?.success) {
+        throw new Error(result?.message || "生成失败");
+      }
+
+      // 优先使用fileID下载
+      if (isCloudFileResponse(result)) {
+        const downloadRes = await Taro.cloud.downloadFile({
+          fileID: result.fileID,
+        });
+
+        await Taro.openDocument({
+          filePath: downloadRes.tempFilePath,
+          fileType: "xlsx",
+        });
+        return;
+      }
+
+      // 兼容旧版downloadUrl
+      if (isHttpUrlResponse(result)) {
+        const { tempFilePath } = await Taro.downloadFile({
+          url: result.downloadUrl,
+        });
+
+        await Taro.openDocument({
+          filePath: tempFilePath,
+          fileType: "xlsx",
+        });
+        return;
+      }
+
+      throw new Error("未返回有效的文件标识");
+    } catch (error) {
+      console.error("生成Excel失败:", error);
+      Taro.showToast({
+        title: error.message || "操作失败",
+        icon: "none",
+        duration: 3000,
+      });
     }
   };
 
@@ -227,6 +315,20 @@ function Index() {
           </Button>
         </View>
       )}
+      <View className="section">
+        <Button
+          type="primary"
+          block
+          onClick={() => {
+            generateExcel([
+              { isbn: "9787535435828", goodCount: 15, badCount: 1 },
+              { isbn: "9781234567890", goodCount: 10, badCount: 0 },
+            ]);
+          }}
+        >
+          生成文件并下载
+        </Button>
+      </View>
     </View>
   );
 }

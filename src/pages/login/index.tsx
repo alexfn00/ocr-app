@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Taro from "@tarojs/taro";
-import { View } from "@tarojs/components";
+import { View, Text } from "@tarojs/components";
 import { Input, Button, CellGroup, Cell } from "@nutui/nutui-react-taro";
 import "./index.scss";
 
@@ -118,28 +118,38 @@ export default function LoginPage() {
 
   return (
     <View className="login-page">
-      <CellGroup>
-        <Cell title="手机号" />
+      {/* 手机号 */}
+      <View className="input-group">
+        <Text className="input-label">手机号</Text>
         <Input
           type="number"
           placeholder="请输入手机号"
           value={phone}
+          maxLength={11}
           onChange={(val) => setPhone(val)}
         />
-        <Cell title="密码" />
+      </View>
+
+      {/* 密码 */}
+      <View className="input-group">
+        <Text className="input-label">密码</Text>
         <Input
           type="password"
           placeholder="请输入密码"
           value={password}
           onChange={(val) => setPassword(val)}
         />
-      </CellGroup>
-
-      <View style={{ padding: "16px" }}>
-        <Button type="primary" block onClick={login}>
-          登录
-        </Button>
       </View>
+
+      {/* 登录按钮 */}
+      <Button
+        type="primary"
+        block
+        style={{ marginTop: "20px" }}
+        onClick={login}
+      >
+        登录
+      </Button>
     </View>
   );
 }

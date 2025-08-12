@@ -1,21 +1,49 @@
 .user-admin-page {
-  padding: 16px;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 
     .title {
-      font-weight: bold;
       font-size: 20px;
+      font-weight: bold;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
     }
   }
 
   .loading-text {
+    display: block;
     text-align: center;
-    padding: 12px 0;
+    padding: 10px;
     color: #999;
+  }
+
+  .cell-actions {
+    display: flex;
+    gap: 5px;
+  }
+
+  .dialog-content {
+    padding: 10px;
+
+    .input-field {
+      margin-bottom: 15px;
+      
+      .input-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #666;
+      }
+    }
   }
 }

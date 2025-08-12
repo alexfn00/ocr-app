@@ -11,7 +11,7 @@ exports.main = async (event, context) => {
       .skip(skip)
       .limit(pageSize)
       .orderBy('phone', 'asc')
-      .field({ phone: true, nickname: true, role: true, openid: true })
+      .field({ phone: true, nickname: true, role: true, openid: true, company: true })
       .get()
     const total = await db.collection('users').count()
     return {
