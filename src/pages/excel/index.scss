@@ -1,0 +1,41 @@
+.excel-list-container {
+  padding: 16px;
+}
+
+.excel-list-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.excel-list-empty {
+  color: #888;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.excel-list-item {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.file-name {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.file-date {
+  color: #888;
+  font-size: 12px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.item-actions {
+  display: flex;
+  gap: 8px;
+}

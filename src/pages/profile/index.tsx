@@ -53,6 +53,11 @@ export default function ProfilePage() {
             onClick={() => Taro.navigateTo({ url: "/pages/user-admin/index" })}
           />
         )}
+        <Cell
+          title="Excel文件管理"
+          extra={<ArrowRight />}
+          onClick={() => Taro.navigateTo({ url: "/pages/excel/index" })}
+        />
       </CellGroup>
 
       <View style={{ padding: "16px" }}>

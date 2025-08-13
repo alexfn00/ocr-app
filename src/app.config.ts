@@ -1,5 +1,7 @@
 export default defineAppConfig({
   pages: [
+    'pages/query/index',
+    'pages/excel/index',
     'pages/index/index',
     'pages/import/index',
     'pages/login/index',
@@ -16,8 +18,14 @@ export default defineAppConfig({
   tabBar: {
     list: [
       {
-        pagePath: "pages/index/index",
+        pagePath: "pages/query/index",
         text: "首页",
+        iconPath: "assets/home.png",
+        selectedIconPath: "assets/home-active.png"
+      },
+      {
+        pagePath: "pages/index/index",
+        text: "退书",
         iconPath: "assets/home.png",
         selectedIconPath: "assets/home-active.png"
       },

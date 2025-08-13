@@ -78,9 +78,19 @@ exports.main = async (event, context) => {
       fileContent: buffer,
     });
 
+    
+    
     const fileID = uploadRes.fileID;
     const urlRes = await cloud.getTempFileURL({ fileList: [fileID] });
-
+    
+    console.log("上传成功 urlRes", urlRes);
+    await db.collection('returnExcelList').add({
+      data: {
+        fileName: urlRes.fileName,
+        downloadUrl: urlRes.fileList[0].tempFileURL,
+        createdAt: db.serverDate(),
+      },
+    });
     return {
       success: true,
       fileID,

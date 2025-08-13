@@ -1,0 +1,30 @@
+.actionPanel {
+  margin-top: 20px;
+  padding: 12px;
+  border-top: 1px solid #ddd;
+  background-color: #fafafa;
+  border-radius: 6px;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.inputGroup Text {
+  width: 90px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+.inputGroup Input {
+  flex: 1;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center; // 水平居中
+  gap: 12px; // 按钮间距
+}

@@ -1,0 +1,52 @@
+.booksList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.bookCard {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.bookCard:hover {
+  border-color: #409eff;
+}
+
+.selected {
+  border-color: #409eff;
+  background-color: #e6f2ff;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.cardTitle {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+.cardExtra {
+  font-size: 14px;
+  color: #666;
+}
+
+.cardNote {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 6px;
+}
+
+.cardBody {
+  font-size: 14px;
+  color: #444;
+}

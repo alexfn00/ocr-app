@@ -5,9 +5,6 @@ import {
   Cell,
   CellGroup,
   Button,
-  Dialog,
-  Input,
-  Picker,
   PickerOption,
   Swipe,
 } from "@nutui/nutui-react-taro";
