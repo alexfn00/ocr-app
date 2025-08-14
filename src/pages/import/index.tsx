@@ -3,9 +3,12 @@ import Taro from "@tarojs/taro";
 import { useState } from "react";
 import { Button } from "@nutui/nutui-react-taro";
 import { Textarea } from "@tarojs/components";
+import { useAuthGuard } from "src/hooks/useAuthGuard";
 
 export default function UploadPage() {
   const [result, setResult] = useState("");
+
+  useAuthGuard();
 
   // 替换showToast函数，调用Taro原生Toast
   const showToast = (msg: string, type: "success" | "fail" = "success") => {

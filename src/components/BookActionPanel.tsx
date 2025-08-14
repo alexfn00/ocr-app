@@ -29,6 +29,7 @@ const NumberInput = ({
       type="number"
       placeholder={placeholder}
       value={value}
+      clearable
       onChange={(val) => {
         if (/^\d*$/.test(val)) {
           onChange(val);

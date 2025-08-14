@@ -1,12 +1,13 @@
 import { useState } from "react";
 import Taro, { useDidShow } from "@tarojs/taro";
 import { View, Text } from "@tarojs/components";
-import { Button, Input, Price } from "@nutui/nutui-react-taro";
+import { Button, Input } from "@nutui/nutui-react-taro";
 import "./index.scss";
 import BookList from "src/components/BookList";
 import BookActionPanel from "src/components/BookActionPanel";
 import { RETURN_LIST } from "src/constants/storageKeys";
 import { updateReturnListBadge } from "src/utils/tabbar";
+import { useAuthGuard } from "src/hooks/useAuthGuard";
 
 const QueryPage = () => {
   const [activeTab, setActiveTab] = useState<"camera" | "manual">("camera");
@@ -21,6 +22,8 @@ const QueryPage = () => {
   const [returnList, setReturnList] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useAuthGuard();
 
   useDidShow(() => {
     const stored = Taro.getStorageSync(RETURN_LIST);
@@ -165,8 +168,6 @@ const QueryPage = () => {
     }
 
     const book = books[selectedBookIndex];
-    console.log("selectedBookIndex:", selectedBookIndex);
-    console.log("book:", book);
     const newItem = {
       isbn: book.ISBN,
       title: book.书名 || "",
@@ -177,8 +178,6 @@ const QueryPage = () => {
     };
 
     const isDuplicate = returnList.some((item) => item.isbn === newItem.isbn);
-    console.log("returnList:", returnList);
-    console.log("item:", newItem);
     if (isDuplicate) {
       Taro.showToast({
         title: "记录已存在",
@@ -256,6 +255,7 @@ const QueryPage = () => {
             onChange={(val) => setManualISBN(val)}
             type="text"
             className="isbn-input"
+            clearable
           />
           <Button
             type="primary"

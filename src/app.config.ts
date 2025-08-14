@@ -1,13 +1,17 @@
 export default defineAppConfig({
   pages: [
-    'pages/query/index',
-    'pages/excel/index',
-    'pages/index/index',
-    'pages/import/index',
-    'pages/login/index',
-    'pages/profile/index',
-    'pages/user-admin/index',
-    'pages/user-edit/index',
+    'pages/query/index',  // tabBar 首页
+    'pages/index/index',  // tabBar 退书
+    'pages/import/index', // tabBar 导入
+    'pages/profile/index',// tabBar 我的
+    'pages/login/index',   // 登录页
+    'pages/excel/index'    // Excel 相关页面
+  ],
+  subPackages: [
+    {
+      root: 'pages/user',
+      pages: ['admin/index', 'edit/index'] // 用户管理分包
+    }
   ],
   window: {
     backgroundTextStyle: 'light',
@@ -26,8 +30,8 @@ export default defineAppConfig({
       {
         pagePath: "pages/index/index",
         text: "退书",
-        iconPath: "assets/home.png",
-        selectedIconPath: "assets/home-active.png"
+        iconPath: "assets/return.png",
+        selectedIconPath: "assets/return-active.png"
       },
       {
         pagePath: "pages/import/index",
@@ -45,6 +49,6 @@ export default defineAppConfig({
     color: "#999",
     selectedColor: "#07c160",
     backgroundColor: "#ffffff",
-    borderStyle: "black"
+    borderStyle: "black",
   }
 })

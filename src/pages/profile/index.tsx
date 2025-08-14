@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Taro from "@tarojs/taro";
+import Taro, { useDidShow } from "@tarojs/taro";
 import { View, Image, Text } from "@tarojs/components";
 import { ArrowRight } from "@nutui/icons-react-taro";
 import { Cell, CellGroup, Button } from "@nutui/nutui-react-taro";
@@ -8,15 +8,18 @@ import "./index.scss";
 export default function ProfilePage() {
   const [userInfo, setUserInfo] = useState<any>(null);
 
-  useEffect(() => {
+  useDidShow(() => {
     const user = Taro.getStorageSync("userInfo");
     if (!user) {
-      Taro.switchTab({ url: "/pages/index/index" });
-      Taro.showToast({ title: "请先登录", icon: "none" });
+      console.log("用户信息未找到，跳转到登录页面");
+      Taro.redirectTo({ url: "/pages/login/index" });
+      // Taro.showToast({ title: "请先登录", icon: "none" });
     } else {
+      console.log("用户信息加载成功", user);
+      Taro.setNavigationBarTitle({ title: "个人中心" });
       setUserInfo(user);
     }
-  }, []);
+  });
 
   const handleLogout = () => {
     Taro.showModal({
@@ -32,7 +35,10 @@ export default function ProfilePage() {
     });
   };
 
-  if (!userInfo) return null;
+  if (!userInfo) {
+    console.log("用户信息未加载");
+    return null;
+  }
 
   return (
     <View className="profile-page">
@@ -50,7 +56,7 @@ export default function ProfilePage() {
           <Cell
             title="用户管理"
             extra={<ArrowRight />}
-            onClick={() => Taro.navigateTo({ url: "/pages/user-admin/index" })}
+            onClick={() => Taro.navigateTo({ url: "/pages/user/admin/index" })}
           />
         )}
         <Cell

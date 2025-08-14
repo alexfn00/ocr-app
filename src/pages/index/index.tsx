@@ -7,6 +7,7 @@ import "./index.scss";
 import { RETURN_LIST } from "src/constants/storageKeys";
 import { updateReturnListBadge } from "src/utils/tabbar";
 import BookReturnList from "src/components/BookReturnList";
+import { useAuthGuard } from "src/hooks/useAuthGuard";
 
 // 新类型
 interface ReturnItem {
@@ -48,6 +49,7 @@ export default function ReturnListPage() {
   const [returnList, setReturnList] = useState<ReturnItem[]>([]);
   const [generatedFileID, setGeneratedFileID] = useState<string | null>(null);
 
+  useAuthGuard();
   useDidShow(() => {
     const list = Taro.getStorageSync(RETURN_LIST);
     if (Array.isArray(list)) {
