@@ -8,6 +8,7 @@ import "./index.scss";
 interface ExcelFile {
   _id: string;
   fileName: string;
+  fileID: string;
   downloadUrl: string;
   createdAt: number;
 }
@@ -59,15 +60,15 @@ export default function MyExcelListPage() {
     }
   };
 
-  const deleteFileRecord = async (fileId: string) => {
+  const deleteFileRecord = async (recordId: string, fileID: string) => {
     try {
       const res = await Taro.cloud.callFunction({
         name: "deleteExcelRecord",
-        data: { fileId },
+        data: { recordId, fileID },
       });
       const result = res.result as { success: boolean; message?: string };
       if (result.success) {
-        setFiles(files.filter((f) => f._id !== fileId));
+        setFiles(files.filter((f) => f._id !== recordId));
         Taro.showToast({ title: "删除成功", icon: "success" });
       } else {
         Taro.showToast({ title: result.message || "删除失败", icon: "none" });
@@ -102,7 +103,7 @@ export default function MyExcelListPage() {
               <Button
                 type="warning"
                 size="small"
-                onClick={() => deleteFileRecord(file._id)}
+                onClick={() => deleteFileRecord(file._id, file.fileID)}
                 style={{ marginLeft: "8px" }}
               >
                 删除

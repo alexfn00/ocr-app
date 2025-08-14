@@ -12,17 +12,18 @@ const db = cloud.database();
  */
 exports.main = async (event, context) => {
   try {
-    
-    const { fileId } = event;
-    if (!fileId) {
-      return { success: false, message: "缺少 fileID 参数" };
+
+    const { recordId, fileID } = event;
+    if (!recordId || !fileID) {
+      console.error("缺少必要参数：recordId 或 fileID");
+      return { success: false, message: "缺少必要参数：recordId 或 fileID" };
     }
 
     // 删除云文件
-    // await cloud.deleteFile({ fileList: [fileId] });
+    await cloud.deleteFile({ fileList: [fileID] });
 
     // 删除数据库记录
-    const delRes = await db.collection('returnExcelList').where({ _id:fileId }).remove();
+    const delRes = await db.collection('returnExcelList').where({ _id: recordId }).remove();
 
     return { success: true, message: "删除成功", deletedCount: delRes.stats.removed };
   } catch (err) {

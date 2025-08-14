@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Taro, { useDidShow, useShareAppMessage } from "@tarojs/taro";
+import Taro, { useDidShow } from "@tarojs/taro";
 import { View, Text } from "@tarojs/components";
-import { Button, Input } from "@nutui/nutui-react-taro";
+import { Button } from "@nutui/nutui-react-taro";
 
 import "./index.scss";
 import { RETURN_LIST } from "src/constants/storageKeys";
@@ -33,13 +33,6 @@ interface CloudFunctionResponse {
    * @deprecated 建议迁移到fileID方式
    */
   downloadUrl?: string;
-}
-
-// 类型守卫方法
-function isCloudFileResponse(
-  res: CloudFunctionResponse
-): res is CloudFunctionResponse & { fileID: string } {
-  return typeof res.fileID === "string" && res.fileID.startsWith("cloud://");
 }
 
 function isHttpUrlResponse(
@@ -86,6 +79,7 @@ export default function ReturnListPage() {
     items: { isbn: string; goodCount: number; badCount: number }[]
   ) => {
     try {
+      Taro.showLoading({ title: "生成中..." });
       const res = await Taro.cloud.callFunction({
         name: "generateReturnExcel",
         data: { items },
@@ -96,12 +90,6 @@ export default function ReturnListPage() {
       if (!result?.success) {
         throw new Error(result?.message || "生成失败");
       }
-
-      // if (isCloudFileResponse(result)) {
-      //   console.log("fileID", result.fileID);
-      //   Taro.showToast({ title: "生成成功", icon: "success" });
-      //   return result.fileID;
-      // }
 
       if (isHttpUrlResponse(result)) {
         Taro.showToast({ title: "生成成功", icon: "success" });
@@ -116,6 +104,8 @@ export default function ReturnListPage() {
         icon: "none",
         duration: 3000,
       });
+    } finally {
+      Taro.hideLoading();
     }
   };
 
@@ -164,26 +154,32 @@ export default function ReturnListPage() {
           Taro.setStorageSync(RETURN_LIST, newList);
         }}
       />
-
-      <View className="return-list-actions">
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "12px",
+          width: "100%",
+        }}
+      >
         <Button
           type="primary"
-          block
+          style={{ flex: 1 }}
           disabled={returnList.length === 0}
           onClick={async () => {
             const fileID = await generateExcel(returnList); // 返回 fileID
             if (fileID) {
               setGeneratedFileID(fileID); // 保存到 state，启用分享按钮
-              Taro.showToast({ title: "生成成功，可分享", icon: "success" });
+              Taro.showToast({ title: "生成成功", icon: "success" });
             }
           }}
         >
-          生成退货单 Excel
+          生成退货单
         </Button>
         <Button
           type="success"
-          block
-          disabled={!generatedFileID} // 只有生成成功才可用
+          style={{ flex: 1 }}
+          disabled={!generatedFileID}
           onClick={() => {
             if (!generatedFileID) return;
             copyDownloadUrl(generatedFileID);
@@ -191,6 +187,9 @@ export default function ReturnListPage() {
         >
           复制下载链接
         </Button>
+      </View>
+
+      <View className="return-list-actions">
         {copied && (
           <Text className="message">链接已复制，请打开浏览器粘贴访问下载</Text>
         )}

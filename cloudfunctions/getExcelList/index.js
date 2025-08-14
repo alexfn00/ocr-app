@@ -11,7 +11,7 @@ exports.main = async (event, context) => {
       .skip(skip)
       .limit(pageSize)
       .orderBy('createdAt', 'desc')
-      .field({ _id: true, createdAt: true, downloadUrl: true })
+      .field({ _id: true, createdAt: true, downloadUrl: true, fileID: true })
       .get()
     const total = await db.collection('returnExcelList').count()
     return {

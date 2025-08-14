@@ -46,9 +46,7 @@ exports.main = async (event, context) => {
     console.log('queryResults', queryResults)
     // 5. 追加数据（保留模板表头）
     items.forEach(({ isbn, goodCount, badCount }, i) => {
-      console.log('isbn', isbn)
       const bookData = queryResults[i].data[0] || {};
-      console.log('bookData', bookData)
       sheetData.push([
         customerCode,
         isbn,
@@ -83,10 +81,10 @@ exports.main = async (event, context) => {
     const fileID = uploadRes.fileID;
     const urlRes = await cloud.getTempFileURL({ fileList: [fileID] });
     
-    console.log("上传成功 urlRes", urlRes);
     await db.collection('returnExcelList').add({
       data: {
         fileName: urlRes.fileName,
+        fileID,
         downloadUrl: urlRes.fileList[0].tempFileURL,
         createdAt: db.serverDate(),
       },
