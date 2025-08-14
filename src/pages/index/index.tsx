@@ -50,7 +50,6 @@ export default function ReturnListPage() {
 
   useDidShow(() => {
     const list = Taro.getStorageSync(RETURN_LIST);
-    console.log("从缓存加载退货单", list);
     if (Array.isArray(list)) {
       setReturnList(list);
     }
@@ -86,7 +85,6 @@ export default function ReturnListPage() {
       });
 
       const result = res.result as CloudFunctionResponse;
-      console.log("result", result);
       if (!result?.success) {
         throw new Error(result?.message || "生成失败");
       }

@@ -43,7 +43,6 @@ exports.main = async (event, context) => {
         .get();
     });
     const queryResults = await Promise.all(promises);
-    console.log('queryResults', queryResults)
     // 5. 追加数据（保留模板表头）
     items.forEach(({ isbn, goodCount, badCount }, i) => {
       const bookData = queryResults[i].data[0] || {};

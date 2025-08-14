@@ -121,7 +121,6 @@ export default function UserEdit() {
           : user,
       });
 
-      console.log("res", res);
       const result = res.result as CloudFunctionResult;
       if (result.success) {
         Taro.showToast({

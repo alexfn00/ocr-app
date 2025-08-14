@@ -32,7 +32,6 @@ export default function MyExcelListPage() {
         name: "getExcelList",
       });
       const result = res.result as GetExcelListResult;
-      console.log("获取Excel文件列表", result);
       if (result.success && result.data) {
         setFiles(result.data);
       } else {
