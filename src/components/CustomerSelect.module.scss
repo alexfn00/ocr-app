@@ -1,0 +1,70 @@
+/* 外层容器，统一控制 Cell 的布局比例与省略号 */
+.customer-select {
+  /* 顶部与列表里的 NutUI Cell 统一样式 */
+  .nut-cell {
+    display: flex; /* 确保左右并排 */
+    align-items: center;
+  }
+  .nut-cell__title {
+    flex: 0 0 160rpx; /* 左侧固定宽度（可按需调整） */
+    max-width: 160rpx;
+    color: #666;
+    font-size: 28rpx;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .nut-cell__value {
+    flex: 1 1 auto; /* 右侧自适应铺满 */
+    min-width: 0; /* 关键：允许收缩，才能生效省略号 */
+    text-align: right;
+    color: #111;
+    font-size: 28rpx;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Popup 内部布局：用 flex 切分上下，避免在 scroll-view 上设置 padding 产生警告 */
+  .popup-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: #fff;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    padding: 16rpx 24rpx;
+    background: #f8f8f8;
+    border-bottom: 1px solid #eee;
+    gap: 16rpx; /* 若小程序版本对 gap 支持不好，可删掉并改用 margin-left */
+  }
+  .search-input {
+    flex: 1;
+    background: #fff;
+    border-radius: 40rpx;
+    padding: 12rpx 24rpx;
+    font-size: 28rpx;
+    /* 轻阴影可选 */
+    /* box-shadow: 0 8rpx 16rpx rgba(0,0,0,0.06); */
+  }
+  .search-btn {
+    border-radius: 40rpx;
+    height: 56rpx;
+    line-height: 56rpx;
+    padding: 0 24rpx;
+  }
+
+  .list-body {
+    flex: 1;
+    min-height: 0; /* 允许子元素收缩，ScrollView 才能正确填满 */
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40rpx;
+    color: #999;
+  }
+}

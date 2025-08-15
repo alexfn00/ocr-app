@@ -12,6 +12,7 @@ const db = cloud.database();
  */
 exports.main = async (event, context) => {
   try {
+    const { OPENID } = cloud.getWXContext();
 
     const { recordId, fileID } = event;
     if (!recordId || !fileID) {
@@ -23,7 +24,7 @@ exports.main = async (event, context) => {
     await cloud.deleteFile({ fileList: [fileID] });
 
     // 删除数据库记录
-    const delRes = await db.collection('returnExcelList').where({ _id: recordId }).remove();
+    const delRes = await db.collection('returnExcelList').where({ _id: recordId, openid: OPENID }).remove();
 
     return { success: true, message: "删除成功", deletedCount: delRes.stats.removed };
   } catch (err) {

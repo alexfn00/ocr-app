@@ -28,6 +28,7 @@ export default function MyExcelListPage() {
 
   const fetchExcelList = async () => {
     try {
+      Taro.showLoading({ title: "加载中..." });
       const res = await Taro.cloud.callFunction({
         name: "getExcelList",
       });
@@ -40,6 +41,8 @@ export default function MyExcelListPage() {
     } catch (err) {
       console.error(err);
       Taro.showToast({ title: "云函数调用失败", icon: "none" });
+    } finally {
+      Taro.hideLoading();
     }
   };
 

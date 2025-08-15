@@ -9,11 +9,9 @@ const TEMPLATE_FILE_ID = "cloud://ocr-oecent-7g72ks3y54a20530.6f63-ocr-oecent-7g
 
 exports.main = async (event, context) => {
   try {
-    const items = event.items || [];
-    const customerCode = "默认客户编码";
-    const discount = 1;
+    const { OPENID } = cloud.getWXContext();
+    const { customerCode, discount, items } = event;
     const returnOrderNo = "";
-    const edition = "";
 
     // 1. 下载模板文件
     const templateRes = await cloud.downloadFile({
@@ -82,6 +80,7 @@ exports.main = async (event, context) => {
     
     await db.collection('returnExcelList').add({
       data: {
+        openid: OPENID,
         fileName: urlRes.fileName,
         fileID,
         downloadUrl: urlRes.fileList[0].tempFileURL,

@@ -91,13 +91,13 @@ export default function UserAdminPage() {
 
   const handleAddUser = () => {
     Taro.navigateTo({
-      url: `/pages/user-edit/index`,
+      url: `/pages/user/edit/index`,
     });
   };
 
   const handleEditUser = (user: User) => {
     Taro.navigateTo({
-      url: `/pages/user-edit/index?id=${user._id}`,
+      url: `/pages/user/edit/index?id=${user._id}`,
     });
   };
 

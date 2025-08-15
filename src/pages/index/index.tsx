@@ -7,6 +7,7 @@ import "./index.scss";
 import { RETURN_LIST } from "src/constants/storageKeys";
 import { updateReturnListBadge } from "src/utils/tabbar";
 import BookReturnList from "src/components/BookReturnList";
+import CustomerSelect, { Customer } from "src/components/CustomerSelect";
 import { useAuthGuard } from "src/hooks/useAuthGuard";
 
 // 新类型
@@ -48,6 +49,9 @@ export default function ReturnListPage() {
   const [copied, setCopied] = useState(false);
   const [returnList, setReturnList] = useState<ReturnItem[]>([]);
   const [generatedFileID, setGeneratedFileID] = useState<string | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
 
   useAuthGuard();
   useDidShow(() => {
@@ -77,13 +81,15 @@ export default function ReturnListPage() {
   };
 
   const generateExcel = async (
+    customerCode: string,
+    discount: string,
     items: { isbn: string; goodCount: number; badCount: number }[]
   ) => {
     try {
       Taro.showLoading({ title: "生成中..." });
       const res = await Taro.cloud.callFunction({
         name: "generateReturnExcel",
-        data: { items },
+        data: { customerCode, discount, items },
       });
 
       const result = res.result as CloudFunctionResponse;
@@ -154,6 +160,11 @@ export default function ReturnListPage() {
           Taro.setStorageSync(RETURN_LIST, newList);
         }}
       />
+      <CustomerSelect
+        value={selectedCustomer}
+        onChange={(c) => setSelectedCustomer(c)}
+        placeholder="请选择客户"
+      />
       <View
         style={{
           display: "flex",
@@ -167,7 +178,19 @@ export default function ReturnListPage() {
           style={{ flex: 1 }}
           disabled={returnList.length === 0}
           onClick={async () => {
-            const fileID = await generateExcel(returnList); // 返回 fileID
+            if (!selectedCustomer) {
+              Taro.showToast({
+                title: "请先选择客户",
+                icon: "none",
+                duration: 2000,
+              });
+              return;
+            }
+            const fileID = await generateExcel(
+              selectedCustomer.客户编码,
+              selectedCustomer.折扣,
+              returnList
+            ); // 返回 fileID
             if (fileID) {
               setGeneratedFileID(fileID); // 保存到 state，启用分享按钮
               Taro.showToast({ title: "生成成功", icon: "success" });

@@ -35,6 +35,52 @@ export default function ProfilePage() {
     });
   };
 
+  const handleUnbind = () => {
+    Taro.showModal({
+      title: "解绑微信账号",
+      content: "解绑后需要重新绑定才能使用系统，确定解绑吗？",
+      confirmText: "确认解绑",
+      showCancel: true,
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            Taro.showLoading({ title: "解绑中..." });
+
+            // 定义云函数返回类型
+            interface UnbindResult {
+              success: boolean;
+              message: string;
+            }
+
+            const unbindRes = await Taro.cloud.callFunction({
+              name: "unbindOpenid",
+              data: {},
+            });
+
+            const result = unbindRes.result as UnbindResult;
+
+            Taro.hideLoading();
+
+            if (result.success) {
+              Taro.removeStorageSync("userInfo");
+              Taro.showToast({ title: "解绑成功，请重新登录", icon: "none" });
+              Taro.redirectTo({ url: "/pages/login/index" });
+            } else {
+              Taro.showToast({
+                title: result.message || "解绑失败",
+                icon: "none",
+              });
+            }
+          } catch (err) {
+            console.error("解绑失败", err);
+            Taro.hideLoading();
+            Taro.showToast({ title: "解绑失败", icon: "none" });
+          }
+        }
+      },
+    });
+  };
+
   if (!userInfo) {
     console.log("用户信息未加载");
     return null;
@@ -67,7 +113,15 @@ export default function ProfilePage() {
       </CellGroup>
 
       <View style={{ padding: "16px" }}>
-        <Button type="danger" block onClick={handleLogout}>
+        <Button type="warning" block onClick={handleUnbind}>
+          解绑微信账号
+        </Button>
+        <Button
+          type="danger"
+          block
+          onClick={handleLogout}
+          style={{ marginTop: "10px" }}
+        >
           退出登录
         </Button>
       </View>
