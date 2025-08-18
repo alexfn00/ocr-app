@@ -5,8 +5,13 @@ const path = require('path')
 const os = require('os')
 
 cloud.init({
-  env: cloud.DYNAMIC_CURRENT_ENV, // ✅ 使用当前环境
+  env: cloud.DYNAMIC_CURRENT_ENV,
 })
+
+// ISBN 统一处理：去掉 "-"
+function normalizeISBN(isbn) {
+  return isbn ? isbn.replace(/-/g, '').trim() : ''
+}
 
 exports.main = async (event, context) => {
   const { fileID } = event
@@ -43,6 +48,7 @@ exports.main = async (event, context) => {
     const headerRow = rawData[3] // 第4行是表头
     const dataRows = rawData.slice(4) // 第5行以后是内容
 
+    // 组装数据
     const data = dataRows
       .map((row) => {
         const record = {}
@@ -60,31 +66,44 @@ exports.main = async (event, context) => {
       }
     }
 
-    // 4. 插入或更新数据
+    // 4. 去重（Excel 内部）
+    const seen = new Set()
+    const uniqueData = []
+    for (const item of data) {
+      const normISBN = normalizeISBN(item.ISBN)
+      if (normISBN && seen.has(normISBN)) continue
+      if (normISBN) seen.add(normISBN)
+      uniqueData.push(item)
+    }
+
+    // 5. 插入数据（存在就忽略）
     const db = cloud.database()
     const collection = db.collection('excelData')
 
     let insertCount = 0
-    let updateCount = 0
+    let skipCount = 0
 
-    for (const item of data) {
-      const isbn = item.ISBN?.trim()
+    for (const item of uniqueData) {
+      const normISBN = normalizeISBN(item.ISBN)
 
-      if (isbn) {
-        // 查找是否已存在该 ISBN
-        const existing = await collection.where({ ISBN: isbn }).get()
+      if (normISBN) {
+        // 查找是否已存在
+        const existing = await collection.where({ normISBN }).get()
         if (existing.data.length > 0) {
-          // 存在 → 更新
-          const docId = existing.data[0]._id
-          await collection.doc(docId).update({ data: item })
-          updateCount++
+          // 已存在 → 忽略
+          skipCount++
         } else {
           // 不存在 → 添加
-          await collection.add({ data: item })
+          await collection.add({
+            data: {
+              ...item,
+              normISBN, // 存储标准化后的 ISBN
+            },
+          })
           insertCount++
         }
       } else {
-        // 没有 ISBN，直接添加
+        // 没有 ISBN → 直接插入
         await collection.add({ data: item })
         insertCount++
       }
@@ -94,8 +113,8 @@ exports.main = async (event, context) => {
       code: 0,
       message: '导入完成',
       insertCount,
-      updateCount,
-      total: data.length,
+      skipCount,
+      total: uniqueData.length,
     }
 
   } catch (error) {
