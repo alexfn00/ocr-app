@@ -13,8 +13,17 @@ function normalizeISBN(isbn) {
   return isbn ? isbn.replace(/-/g, '').trim() : ''
 }
 
+function getISBN(item, publisher) {
+  if (publisher == '中国农业大学出版社') {
+    return item['书号']
+  } else if (publisher == '中国人口出版社') {
+    return item['ISBN']
+  }
+  return null
+}
+
 exports.main = async (event, context) => {
-  const { fileID } = event
+  const { fileID, publisher } = event
 
   if (!fileID) {
     return {
@@ -22,7 +31,6 @@ exports.main = async (event, context) => {
       message: '缺少参数 fileID',
     }
   }
-
   try {
     // 1. 下载文件
     const res = await cloud.downloadFile({ fileID })
@@ -38,15 +46,26 @@ exports.main = async (event, context) => {
     const sheet = workbook.Sheets[sheetName]
     const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: '' })
 
-    if (rawData.length < 5) {
-      return {
-        code: 422,
-        message: 'Excel 内容不足，至少需要 5 行（含表头）',
+    let headerRow, dataRows
+    if (publisher == '中国农业大学出版社') {
+      if (rawData.length < 2) {
+        return {
+          code: 422,
+          message: 'Excel 内容不足，至少需要 2 行（含表头）',
+        }
       }
+      headerRow = rawData[0] // 第1行是表头
+      dataRows = rawData.slice(1) // 第2行以后是内容
+    } else if (publisher == '中国人口出版社') {
+      if (rawData.length < 5) {
+        return {
+          code: 422,
+          message: 'Excel 内容不足，至少需要 5 行（含表头）',
+        }
+      }
+      headerRow = rawData[3] // 第4行是表头
+      dataRows = rawData.slice(4) // 第5行以后是内容
     }
-
-    const headerRow = rawData[3] // 第4行是表头
-    const dataRows = rawData.slice(4) // 第5行以后是内容
 
     // 组装数据
     const data = dataRows
@@ -70,7 +89,8 @@ exports.main = async (event, context) => {
     const seen = new Set()
     const uniqueData = []
     for (const item of data) {
-      const normISBN = normalizeISBN(item.ISBN)
+      const ISBN = getISBN(item, publisher)
+      const normISBN = normalizeISBN(ISBN)
       if (normISBN && seen.has(normISBN)) continue
       if (normISBN) seen.add(normISBN)
       uniqueData.push(item)
@@ -84,7 +104,8 @@ exports.main = async (event, context) => {
     let skipCount = 0
 
     for (const item of uniqueData) {
-      const normISBN = normalizeISBN(item.ISBN)
+      const ISBN = getISBN(item, publisher)
+      const normISBN = normalizeISBN(ISBN)
 
       if (normISBN) {
         // 查找是否已存在
@@ -98,6 +119,7 @@ exports.main = async (event, context) => {
             data: {
               ...item,
               normISBN, // 存储标准化后的 ISBN
+              publisher: publisher || '', // 使用传入的出版社参数
             },
           })
           insertCount++

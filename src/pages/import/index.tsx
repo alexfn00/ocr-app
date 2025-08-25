@@ -21,7 +21,7 @@ export default function UploadPage() {
 
   const handleUpload = async () => {
     let loadingShown = false;
-
+    const userInfo = Taro.getStorageSync("userInfo");
     try {
       const chooseRes = await Taro.chooseMessageFile({
         count: 1,
@@ -43,7 +43,7 @@ export default function UploadPage() {
 
       const cloudRes = await Taro.cloud.callFunction({
         name: "parseExcel",
-        data: { fileID },
+        data: { fileID, publisher: userInfo?.company || "" },
       });
 
       const resultData = cloudRes.result;

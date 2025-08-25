@@ -5,6 +5,7 @@ import { View, Text } from "@tarojs/components";
 import { Button, Input, Picker, Cell } from "@nutui/nutui-react-taro";
 import type { PickerOption } from "@nutui/nutui-react-taro";
 import "./index.scss";
+import PublisherSelect from "src/components/PublisherSelect";
 
 interface User {
   _id?: string;
@@ -160,11 +161,13 @@ export default function UserEdit() {
       </View>
 
       <View className="input-group">
-        <Text className="input-label">公司</Text>
-        <Input
-          placeholder="请输入公司名称"
-          value={user.company}
-          onChange={(val) => setUser({ ...user, company: val })}
+        <Text className="input-label">出版社</Text>
+        <PublisherSelect
+          value={user.company ? { _id: "", name: user.company } : null}
+          onChange={(publisher) =>
+            setUser({ ...user, company: publisher.name })
+          }
+          placeholder="请选择出版社"
         />
       </View>
 

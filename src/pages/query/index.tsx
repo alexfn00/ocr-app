@@ -169,7 +169,8 @@ const QueryPage = () => {
 
     const book = books[selectedBookIndex];
     const newItem = {
-      isbn: book.ISBN,
+      isbn: book.normISBN || "",
+      publiser: book.publiser || "",
       title: book.书名 || "",
       author: book.作者 || "",
       price: book.定价 || 0,

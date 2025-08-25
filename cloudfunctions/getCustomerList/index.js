@@ -3,32 +3,34 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
 exports.main = async (event, context) => {
-  const { page = 1, pageSize = 20, keyword } = event;
+  const { page = 1, pageSize = 20, keyword, publisher } = event;
 
   try {
+    if (!publisher || publisher.trim() === "") {
+      return {
+        success: false,
+        message: "缺少出版社参数",
+      };
+    }
     const skip = (page - 1) * pageSize;
-    let query = db.collection('customers');
-
-    // 只有 keyword 非空时才加模糊搜索
+    const conditions = { 出版社: publisher };
     if (keyword && keyword.trim() !== "") {
-      const pattern = `.*${keyword.trim()}.*`;
-      query = query.where({
-        客户名称: db.RegExp({
-          regexp: pattern,
-          options: 'i'
-        })
+      conditions['客户名称'] = db.RegExp({
+        regexp: `.*${keyword.trim()}.*`,
+        options: 'i'
       });
     }
 
-    const res = await query
+
+    const res = await db.collection('customers')
+      .where(conditions)
       .skip(skip)
       .limit(pageSize)
-      // .field({ _id: true, 客户编码: true, 客户名称: true, 折扣: true })
       .get();
 
-    const totalRes = keyword
-      ? await query.count()
-      : await db.collection('customers').count();
+     const totalRes = await db.collection('customers')
+      .where(conditions)
+      .count();
 
     return {
       success: true,

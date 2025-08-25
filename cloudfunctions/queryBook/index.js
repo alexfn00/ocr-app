@@ -18,7 +18,7 @@ exports.main = async (event, context) => {
     const keyword = escapeRegExp(isbn);
     const res = await db.collection('excelData')
     .where({
-      ISBN: db.RegExp({
+      normISBN: db.RegExp({
         regexp: `.*${keyword}.*`,
         options: 'i',
       }),

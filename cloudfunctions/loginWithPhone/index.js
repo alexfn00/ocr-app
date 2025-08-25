@@ -43,6 +43,7 @@ exports.main = async (event, context) => {
         _id: user._id,            // 返回用户ID供前端绑定用
         phone: user.phone,
         nickname: user.nickname || "",
+        company: user.company || "",
         avatarUrl: user.avatarUrl || "",
         role: user.role || "user",
         openid: user.openid || null,

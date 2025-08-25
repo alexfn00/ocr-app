@@ -29,17 +29,13 @@ exports.main = async (event, context) => {
 
     // 4. 查询数据库获取图书信息
     const _ = db.command;
-    const promises = items.map(({ isbn }) => {
-      return db.collection(COLLECTION_NAME)
-        .where(
-          _.or([
-            { ISBN: isbn },
-            { 条码书号: isbn }
-          ])
-        )
+    const promises = items.map(({ isbn }) =>
+      db.collection(COLLECTION_NAME)
+        .where({ normISBN: isbn })
         .limit(1)
-        .get();
-    });
+        .get()
+    );
+
     const queryResults = await Promise.all(promises);
     // 5. 追加数据（保留模板表头）
     items.forEach(({ isbn, goodCount, badCount }, i) => {

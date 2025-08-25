@@ -3,65 +3,58 @@ import Taro from "@tarojs/taro";
 import { View, ScrollView } from "@tarojs/components";
 import { Popup, Cell, Input, Button } from "@nutui/nutui-react-taro";
 
-export interface Customer {
+export interface Publisher {
   _id: string;
-  客户名称: string;
-  客户编码: string;
-  折扣: string;
+  name: string;
 }
 
-interface CustomerSelectProps {
-  value?: Customer | null; // 当前选中客户
-  onChange?: (customer: Customer) => void; // 选中回调
+interface PublisherSelectProps {
+  value?: Publisher | null; // 当前选中出版社
+  onChange?: (publisher: Publisher) => void; // 选中回调
   pageSize?: number;
   placeholder?: string;
 }
 
-const CustomerSelect = ({
+const PublisherSelect = ({
   value,
   onChange,
   pageSize = 20,
-  placeholder = "请选择客户",
-}: CustomerSelectProps) => {
+  placeholder = "请选择出版社",
+}: PublisherSelectProps) => {
   const [popupVisible, setPopupVisible] = useState(false);
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [publishers, setPublishers] = useState<Publisher[]>([]);
   const [keyword, setKeyword] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // 加载客户
-  const fetchCustomers = async (pageNum = 1, searchKey = "") => {
+  // 加载出版社
+  const fetchPublishers = async (pageNum = 1, searchKey = "") => {
     setLoading(true);
     try {
-      const userInfo = Taro.getStorageSync("userInfo");
       const res = await Taro.cloud.callFunction({
-        name: "getCustomerList",
-        data: {
-          page: pageNum,
-          pageSize,
-          keyword: searchKey,
-          publisher: userInfo?.company || "",
-        },
+        name: "getPublisherList",
+        data: { page: pageNum, pageSize, keyword: searchKey },
       });
       const result = res.result as any;
+      console.log("fetchPublishers result:", result);
       if (result.success) {
-        let list: Customer[] = result.data;
+        let list: Publisher[] = result.data;
         if (pageNum === 1) {
-          setCustomers(list);
+          setPublishers(list);
         } else {
-          setCustomers((prev) => [...prev, ...list]);
+          setPublishers((prev) => [...prev, ...list]);
         }
         setTotal(result.total);
       } else {
         Taro.showToast({
-          title: result.message || "获取客户失败",
+          title: result.message || "获取出版社失败",
           icon: "none",
         });
       }
     } catch (err) {
       console.error(err);
-      Taro.showToast({ title: "获取客户失败", icon: "none" });
+      Taro.showToast({ title: "获取出版社失败", icon: "none" });
     } finally {
       setLoading(false);
     }
@@ -71,29 +64,29 @@ const CustomerSelect = ({
   const openPopup = () => {
     setPopupVisible(true);
     setPage(1);
-    fetchCustomers(1, keyword);
+    fetchPublishers(1, keyword);
   };
 
   // 滚动到底加载下一页
   const fetchNextPage = () => {
-    if (customers.length < total && !loading) {
+    if (publishers.length < total && !loading) {
       const nextPage = page + 1;
       setPage(nextPage);
-      fetchCustomers(nextPage, keyword);
+      fetchPublishers(nextPage, keyword);
     }
   };
 
-  // 选择客户
-  const handleSelect = (customer: Customer) => {
-    onChange && onChange(customer);
+  // 选择出版社
+  const handleSelect = (publisher: Publisher) => {
+    onChange && onChange(publisher);
     setPopupVisible(false);
   };
 
   return (
     <View>
       <Cell
-        title="客户"
-        extra={value?.客户名称 || placeholder}
+        title="出版社"
+        extra={value?.name || placeholder}
         onClick={openPopup}
       />
 
@@ -114,7 +107,7 @@ const CustomerSelect = ({
           }}
         >
           <Input
-            placeholder="搜索客户"
+            placeholder="搜索出版社"
             value={keyword}
             onChange={(val) => setKeyword(val)}
             style={{
@@ -135,7 +128,7 @@ const CustomerSelect = ({
             }}
             onClick={() => {
               setPage(1);
-              fetchCustomers(1, keyword);
+              fetchPublishers(1, keyword);
             }}
           >
             搜索
@@ -147,18 +140,13 @@ const CustomerSelect = ({
           scrollY
           onScrollToLower={fetchNextPage}
         >
-          {customers.map((c) => (
-            <Cell
-              key={c._id}
-              title={c.客户名称}
-              extra={c.客户编码}
-              onClick={() => handleSelect(c)}
-            />
+          {publishers.map((p) => (
+            <Cell key={p._id} title={p.name} onClick={() => handleSelect(p)} />
           ))}
 
-          {customers.length === 0 && !loading && (
+          {publishers.length === 0 && !loading && (
             <View style={{ textAlign: "center", padding: "20px" }}>
-              暂无客户
+              暂无出版社
             </View>
           )}
         </ScrollView>
@@ -167,4 +155,4 @@ const CustomerSelect = ({
   );
 };
 
-export default CustomerSelect;
+export default PublisherSelect;
