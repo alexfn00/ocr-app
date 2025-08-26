@@ -82,6 +82,7 @@ export default function ReturnListPage() {
 
   const generateExcel = async (
     customerCode: string,
+    customerName: string,
     discount: string,
     items: { isbn: string; goodCount: number; badCount: number }[]
   ) => {
@@ -89,7 +90,7 @@ export default function ReturnListPage() {
       Taro.showLoading({ title: "生成中..." });
       const res = await Taro.cloud.callFunction({
         name: "generateReturnExcel",
-        data: { customerCode, discount, items },
+        data: { customerCode, customerName, discount, items },
       });
 
       const result = res.result as CloudFunctionResponse;
@@ -188,6 +189,7 @@ export default function ReturnListPage() {
             }
             const fileID = await generateExcel(
               selectedCustomer.客户编码,
+              selectedCustomer.客户名称,
               selectedCustomer.折扣,
               returnList
             ); // 返回 fileID

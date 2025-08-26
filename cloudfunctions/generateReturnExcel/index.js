@@ -5,12 +5,22 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 
 const COLLECTION_NAME = "excelData";
-const TEMPLATE_FILE_ID = "cloud://ocr-oecent-7g72ks3y54a20530.6f63-ocr-oecent-7g72ks3y54a20530-1300275738/template/退书预录入导入模板.xls";
+const TEMPLATE_FILE_ID = "cloud://ocr-oecent-7g72ks3y54a20530.6f63-ocr-oecent-7g72ks3y54a20530-1300275738/template/退书预录入导入模版.xlsx"
+
+function formatDate(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  const ss = String(date.getSeconds()).padStart(2, "0");
+  return `${y}-${m}-${d}_${hh}-${mm}-${ss}`;
+}
 
 exports.main = async (event, context) => {
   try {
     const { OPENID } = cloud.getWXContext();
-    const { customerCode, discount, items } = event;
+    const { customerCode, customerName, discount, items } = event;
     const returnOrderNo = "";
 
     // 1. 下载模板文件
@@ -62,15 +72,14 @@ exports.main = async (event, context) => {
     const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
 
     // 8. 上传到云存储
-    const fileName = `return_list_${Date.now()}.xlsx`;
-    const cloudPath = `excel/${fileName}`;
+    const fileName = `${customerName}_退货单_${formatDate()}.xlsx`;
+
+    const cloudPath = `return/${fileName}`;
     const uploadRes = await cloud.uploadFile({
       cloudPath,
       fileContent: buffer,
     });
 
-    
-    
     const fileID = uploadRes.fileID;
     const urlRes = await cloud.getTempFileURL({ fileList: [fileID] });
     

@@ -33,6 +33,7 @@ const CustomerSelect = ({
   // 加载客户
   const fetchCustomers = async (pageNum = 1, searchKey = "") => {
     setLoading(true);
+    Taro.showLoading({ title: "加载中..." });
     try {
       const userInfo = Taro.getStorageSync("userInfo");
       const res = await Taro.cloud.callFunction({
@@ -64,6 +65,7 @@ const CustomerSelect = ({
       Taro.showToast({ title: "获取客户失败", icon: "none" });
     } finally {
       setLoading(false);
+      Taro.hideLoading();
     }
   };
 
