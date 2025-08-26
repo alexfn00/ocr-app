@@ -12,7 +12,7 @@ import { useAuthGuard } from "src/hooks/useAuthGuard";
 const QueryPage = () => {
   const [activeTab, setActiveTab] = useState<"camera" | "manual">("camera");
   const [recognizedISBN, setRecognizedISBN] = useState("");
-  const [manualISBN, setManualISBN] = useState("978-7-5086-7635-7");
+  const [manualISBN, setManualISBN] = useState("");
   const [books, setBooks] = useState<any[]>([]); // 存储已选的图书信息
   const [selectedBookIndex, setSelectedBookIndex] = useState<number | null>(
     null
@@ -132,7 +132,7 @@ const QueryPage = () => {
   const handleManualSearch = () => {
     if (!manualISBN) {
       Taro.showToast({
-        title: "请输入 ISBN",
+        title: "请输入ISBN或图书名",
         icon: "none",
       });
       return;
@@ -251,7 +251,7 @@ const QueryPage = () => {
       {activeTab === "manual" && (
         <View className="tab-content manual-input">
           <Input
-            placeholder="请输入或粘贴 ISBN"
+            placeholder="请输入ISBN或图书名"
             value={manualISBN}
             onChange={(val) => setManualISBN(val)}
             type="text"

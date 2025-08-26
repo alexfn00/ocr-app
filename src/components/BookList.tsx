@@ -6,6 +6,7 @@ interface Book {
   书名: string;
   作者: string;
   ISBN: string;
+  normISBN: string;
   定价?: string | number;
 }
 
@@ -34,7 +35,9 @@ const BookList: React.FC<BookListProps> = ({
             <Text className={styles.cardTitle}>{book.书名}</Text>
             <Text className={styles.cardExtra}>{book.作者}</Text>
           </View>
-          <View className={styles.cardNote}>ISBN: {book.ISBN}</View>
+          <View className={styles.cardNote}>
+            ISBN: {book.ISBN ? book.ISBN : book.normISBN}
+          </View>
           <View className={styles.cardBody}>
             <Text>定价：{book.定价 ?? "暂无"}</Text>
           </View>

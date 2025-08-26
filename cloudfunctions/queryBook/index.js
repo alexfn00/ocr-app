@@ -2,6 +2,8 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
 const db = cloud.database()
+const _ = db.command;
+const escapeRegExp = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 exports.main = async (event, context) => {
   const { isbn } = event
@@ -9,20 +11,29 @@ exports.main = async (event, context) => {
   if (!isbn) {
     return {
       code: 400,
-      message: '缺少 ISBN',
+      message: '缺少查询条件',
     }
   }
 
   try {
-    const escapeRegExp = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     const keyword = escapeRegExp(isbn);
     const res = await db.collection('excelData')
-    .where({
-      normISBN: db.RegExp({
-        regexp: `.*${keyword}.*`,
-        options: 'i',
-      }),
-    })
+    .where(
+        _.or([
+          {
+            normISBN: db.RegExp({
+              regexp: `.*${keyword}.*`,
+              options: "i",
+            }),
+          },
+          {
+            书名: db.RegExp({
+              regexp: `.*${keyword}.*`,
+              options: "i",
+            }),
+          }
+        ])
+      )
     .get();
 
     if (res.data.length > 0) {

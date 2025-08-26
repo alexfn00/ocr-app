@@ -1,6 +1,20 @@
 import type { UserConfigExport } from "@tarojs/cli";
 export default {
-  mini: {},
+  mini: {
+    webpackChain(chain, webpack) {
+      // 开启 terser 压缩
+      if (process.env.NODE_ENV === 'production') {
+        chain.optimization.minimize(true);
+        chain.optimization.minimizer('terser').use(require('terser-webpack-plugin'), [{
+          terserOptions: {
+            compress: {
+              drop_console: true,
+            },
+          },
+        }]);
+      }
+    }
+  },
   h5: {
     /**
      * WebpackChain 插件配置

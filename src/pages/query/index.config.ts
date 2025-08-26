@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: 'ISBN 查询'
+  navigationBarTitleText: '图书查询'
 })
