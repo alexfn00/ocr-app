@@ -35,7 +35,9 @@
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
 
   .isbn-text {
-    margin-top: 12px;
+    display: block;     // 确保 Text 占一整行
+    text-align: center;
+    margin-top: 16px;   // 和上面的 Button 拉开距离
     font-weight: 600;
     color: #333;
   }

@@ -33,58 +33,29 @@ const QueryPage = () => {
     }
   });
 
-  // OCR 拍照识别
-  const handleTakePhoto = () => {
-    setMessage("");
-    Taro.chooseImage({
-      count: 1,
-      success: (res) => {
-        const filePath = res.tempFilePaths[0];
-        Taro.getFileSystemManager().readFile({
-          filePath,
-          encoding: "base64",
-          success: async (data) => {
-            setLoading(true);
-            try {
-              const result = await Taro.cloud.callFunction({
-                name: "ocr",
-                data: { imageBase64: data.data },
-              });
-
-              let isbn = "";
-              // 类型守卫：确保 result.result 是对象且包含 isbn 字段
-              if (
-                result.result &&
-                typeof result.result === "object" &&
-                "isbn" in result.result
-              ) {
-                const { formatted } = (result.result as any).isbn || {};
-                isbn = formatted || "";
-              }
-
-              if (isbn) {
-                setRecognizedISBN(isbn);
-                setMessage("✅ 识别成功");
-                fetchBooksByIsbn(isbn);
-              } else {
-                setMessage("⚠️ 识别失败，请重试或切换到手动输入");
-              }
-            } catch (e) {
-              setMessage("⚠️ 识别出错，请重试或切换到手动输入");
-            } finally {
-              setLoading(false);
-            }
-          },
-          fail: () => {
-            // setMessage("⚠️ 读取图片失败，请重试");
-          },
-        });
-      },
-      fail: () => {
-        // setMessage("⚠️ 选择图片失败");
-      },
-    });
+  // 扫描条码
+  const handleScan = async () => {
+    setLoading(true);
+    try {
+      console.log("开始扫码");
+      Taro.scanCode({
+        onlyFromCamera: true, // 只允许相机
+        scanType: ["barCode"], // 只扫条形码
+        success: async (res) => {
+          const result = res.result; // 条码字符串，一般就是 ISBN
+          setRecognizedISBN(result);
+          console.log("扫描结果:", result);
+          fetchBooksByIsbn(result);
+        },
+        fail: () => {
+          Taro.showToast({ title: "扫码失败", icon: "none" });
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+
   const fetchBooksByIsbn = async (isbn: string) => {
     try {
       Taro.showLoading({ title: "查询中..." });
@@ -107,17 +78,14 @@ const QueryPage = () => {
         if (data.length === 1) {
           setSelectedBookIndex(0);
           setMessage("已自动选中唯一匹配图书");
-          // Taro.showToast({ title: "已自动选中唯一匹配图书", icon: "success" });
         } else if (data.length > 1) {
           setSelectedBookIndex(null);
           setMessage("找到多本，请手动选择");
-          // Taro.showToast({ title: "找到多本，请手动选择", icon: "none" });
         } else {
-          setMessage("未找到图书");
-          // Taro.showToast({ title: "未找到图书", icon: "none" });
+          Taro.showToast({ title: "未找到图书", icon: "none" });
         }
       } else {
-        setMessage("未找到图书");
+        Taro.showToast({ title: "未找到图书", icon: "none" });
         setBooks([]);
       }
     } catch (err) {
@@ -129,7 +97,7 @@ const QueryPage = () => {
   };
 
   // 手动输入调用
-  const handleManualSearch = () => {
+  const handleManualSearch = async () => {
     if (!manualISBN) {
       Taro.showToast({
         title: "请输入ISBN或图书名",
@@ -137,7 +105,13 @@ const QueryPage = () => {
       });
       return;
     }
-    fetchBooksByIsbn(manualISBN);
+
+    setLoading(true);
+    try {
+      await fetchBooksByIsbn(manualISBN);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddToReturnList = () => {
@@ -221,7 +195,7 @@ const QueryPage = () => {
           className={`tab ${activeTab === "camera" ? "active" : ""}`}
           onClick={() => setActiveTab("camera")}
         >
-          拍照识别
+          扫一扫识别
         </View>
         <View
           className={`tab ${activeTab === "manual" ? "active" : ""}`}
@@ -233,18 +207,12 @@ const QueryPage = () => {
 
       {activeTab === "camera" && (
         <View className="tab-content">
-          <Button
-            type="primary"
-            onClick={handleTakePhoto}
-            loading={loading}
-            block
-          >
-            📷 拍照/选图识别 ISBN
+          <Button type="primary" onClick={handleScan} loading={loading} block>
+            📷 扫一扫识别 ISBN
           </Button>
           {recognizedISBN && (
             <Text className="isbn-text">识别结果: {recognizedISBN}</Text>
           )}
-          {message && <Text className="message">{message}</Text>}
         </View>
       )}
 
