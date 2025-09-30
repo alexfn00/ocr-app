@@ -6,7 +6,7 @@ import Taro from "@tarojs/taro";
  * @param count 数量
  * @param tabIndex TabBar 中的索引位置
  */
-export function updateReturnListBadge(count: number, tabIndex: number = 1) {
+export function updateBadge(count: number, tabIndex: number = 1) {
   if (count > 0) {
     Taro.setTabBarBadge({
       index: tabIndex,

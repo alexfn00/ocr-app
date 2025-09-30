@@ -2,7 +2,7 @@ export default defineAppConfig({
   pages: [
     'pages/query/index',  // tabBar 首页
     'pages/index/index',  // tabBar 退书
-    'pages/import/index', // tabBar 导入
+    'pages/order/index', // tabBar 订单
     'pages/profile/index',// tabBar 我的
     'pages/login/index',   // 登录页
     'pages/excel/index'    // Excel 相关页面
@@ -34,10 +34,10 @@ export default defineAppConfig({
         selectedIconPath: "assets/return-active.png"
       },
       {
-        pagePath: "pages/import/index",
-        text: "导入",
-        iconPath: "assets/upload.png",
-        selectedIconPath: "assets/upload-active.png"
+        pagePath: "pages/order/index",
+        text: "订单",
+        iconPath: "assets/order.png",
+        selectedIconPath: "assets/order-active.png"
       },
       {
         pagePath: "pages/profile/index",

@@ -1,12 +1,10 @@
 import { useState } from "react";
-import Taro, { useDidShow } from "@tarojs/taro";
+import Taro from "@tarojs/taro";
 import { View, Text } from "@tarojs/components";
 import { Button, Input } from "@nutui/nutui-react-taro";
 import "./index.scss";
 import BookList from "src/components/BookList";
 import BookActionPanel from "src/components/BookActionPanel";
-import { RETURN_LIST } from "src/constants/storageKeys";
-import { updateReturnListBadge } from "src/utils/tabbar";
 import { useAuthGuard } from "src/hooks/useAuthGuard";
 
 const QueryPage = () => {
@@ -17,21 +15,11 @@ const QueryPage = () => {
   const [selectedBookIndex, setSelectedBookIndex] = useState<number | null>(
     null
   ); // 当前选择的图书索引
-  const [goodCount, setGoodCount] = useState("");
-  const [badCount, setBadCount] = useState("");
-  const [returnList, setReturnList] = useState<any[]>([]);
+
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   useAuthGuard();
-
-  useDidShow(() => {
-    const stored = Taro.getStorageSync(RETURN_LIST);
-    updateReturnListBadge(stored.length);
-    if (stored && Array.isArray(stored)) {
-      setReturnList(stored);
-    }
-  });
 
   // 扫描条码
   const handleScan = async () => {
@@ -114,73 +102,7 @@ const QueryPage = () => {
     }
   };
 
-  const handleAddToReturnList = () => {
-    if (selectedBookIndex === null) {
-      Taro.showToast({
-        title: "请先选择一本图书",
-        icon: "error",
-      });
-      return;
-    }
-
-    const good = Number(goodCount) || 0;
-    const bad = Number(badCount) || 0;
-
-    if (good <= 0) {
-      Taro.showToast({
-        title: "请输入好书数量",
-        icon: "error",
-      });
-      return;
-    }
-    if (bad <= 0) {
-      Taro.showToast({
-        title: "请输入残书数量",
-        icon: "error",
-      });
-      return;
-    }
-
-    const book = books[selectedBookIndex];
-    const newItem = {
-      isbn: book.normISBN || "",
-      publiser: book.publiser || "",
-      title: book.书名 || "",
-      author: book.作者 || "",
-      price: book.定价 || 0,
-      goodCount: goodCount,
-      badCount: badCount,
-    };
-
-    const isDuplicate = returnList.some((item) => item.isbn === newItem.isbn);
-    if (isDuplicate) {
-      Taro.showToast({
-        title: "记录已存在",
-        icon: "error",
-      });
-      return;
-    }
-
-    const updatedReturnList = [...returnList, newItem];
-    setReturnList(updatedReturnList);
-    Taro.setStorage({
-      key: RETURN_LIST,
-      data: updatedReturnList,
-    });
-    updateReturnListBadge(updatedReturnList.length);
-    setSelectedBookIndex(null);
-    setGoodCount("");
-    setBadCount("");
-
-    Taro.showToast({
-      title: "添加成功",
-      icon: "success",
-    });
-  };
-
   const handleResetInputs = () => {
-    setGoodCount("");
-    setBadCount("");
     setSelectedBookIndex(null);
     setBooks([]);
     setManualISBN("");
@@ -246,11 +168,9 @@ const QueryPage = () => {
         />
 
         <BookActionPanel
-          goodCount={goodCount}
-          badCount={badCount}
-          onGoodCountChange={setGoodCount}
-          onBadCountChange={setBadCount}
-          onAdd={handleAddToReturnList}
+          selectedBook={
+            selectedBookIndex !== null ? books[selectedBookIndex] : null
+          }
           onResetInputs={handleResetInputs}
         />
       </View>

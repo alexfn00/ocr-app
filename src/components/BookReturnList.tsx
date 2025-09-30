@@ -7,15 +7,16 @@ export interface ReturnItem {
   title?: string;
   author?: string;
   price?: string | number;
-  goodCount: number;
+  count: number;
   badCount: number;
 }
 
 interface BookReturnListProps {
   items: ReturnItem[];
+  mode: "return" | "order";
   updateCount: (
     index: number,
-    field: "goodCount" | "badCount",
+    field: "count" | "badCount",
     value: string
   ) => void;
   handleDelete: (index: number) => void;
@@ -23,6 +24,7 @@ interface BookReturnListProps {
 
 export default function BookReturnList({
   items,
+  mode,
   updateCount,
   handleDelete,
 }: BookReturnListProps) {
@@ -44,25 +46,27 @@ export default function BookReturnList({
 
           <View className={styles.counts}>
             <View className={styles.countGroup}>
-              <Text>好书：</Text>
+              <Text>{mode == "return" ? "好书数" : "数量"}</Text>
               <Input
                 type="number"
-                value={String(item.goodCount)}
-                onChange={(val) => updateCount(index, "goodCount", val)}
+                value={String(item.count)}
+                onChange={(val) => updateCount(index, "count", val)}
                 placeholder="0"
                 clearable
               />
             </View>
-            <View className={styles.countGroup}>
-              <Text>残书：</Text>
-              <Input
-                type="number"
-                value={String(item.badCount)}
-                onChange={(val) => updateCount(index, "badCount", val)}
-                placeholder="0"
-                clearable
-              />
-            </View>
+            {mode == "return" && (
+              <View className={styles.countGroup}>
+                <Text>残书数：</Text>
+                <Input
+                  type="number"
+                  value={String(item.badCount)}
+                  onChange={(val) => updateCount(index, "badCount", val)}
+                  placeholder="0"
+                  clearable
+                />
+              </View>
+            )}
             <Button
               type="warning"
               size="small"

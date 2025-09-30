@@ -1,8 +1,8 @@
 import { useAuthGuard } from "src/hooks/useAuthGuard";
-import "./index.scss";
+
 import OrderListPage from "src/components/OrderListPage";
 
-export default function ReturnListPage() {
+export default function OrderPage() {
   useAuthGuard();
-  return <OrderListPage title="🧾 退货单" mode="return" />;
+  return <OrderListPage title="📦 订单" mode="order" />;
 }
