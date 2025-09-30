@@ -70,10 +70,12 @@ const QueryPage = () => {
           setSelectedBookIndex(null);
           setMessage("找到多本，请手动选择");
         } else {
-          Taro.showToast({ title: "未找到图书", icon: "none" });
+          setMessage("未找到图书");
+          // Taro.showToast({ title: "未找到图书", icon: "none" });
         }
       } else {
-        Taro.showToast({ title: "未找到图书", icon: "none" });
+        setMessage("未找到图书");
+        // Taro.showToast({ title: "未找到图书", icon: "none" });
         setBooks([]);
       }
     } catch (err) {
@@ -128,13 +130,14 @@ const QueryPage = () => {
       </View>
 
       {activeTab === "camera" && (
-        <View className="tab-content">
+        <View className="tab-content manual-input">
           <Button type="primary" onClick={handleScan} loading={loading} block>
             📷 扫一扫识别 ISBN
           </Button>
           {recognizedISBN && (
             <Text className="isbn-text">识别结果: {recognizedISBN}</Text>
           )}
+          {message && <Text className="message">{message}</Text>}
         </View>
       )}
 
