@@ -27,7 +27,7 @@ exports.main = async (event, context) => {
     }
 
     const user = res.data[0];
-
+    // 检查是否已绑定其他 openid
     if (user.openid && user.openid !== OPENID) {
       return {
         success: false,
@@ -43,7 +43,7 @@ exports.main = async (event, context) => {
         _id: user._id,            // 返回用户ID供前端绑定用
         phone: user.phone,
         nickname: user.nickname || "",
-        company: user.company || "",
+        publisher: user.publisher || "",
         avatarUrl: user.avatarUrl || "",
         role: user.role || "user",
         openid: user.openid || null,
