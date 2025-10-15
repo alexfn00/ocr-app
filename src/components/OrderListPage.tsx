@@ -50,6 +50,7 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
     const saved = Taro.getStorageSync(
       mode === "return" ? RETURN_LIST : ORDER_LIST
     );
+    console.log("加载本地存储的列表:", saved);
     if (Array.isArray(saved)) setItemList(saved);
   });
 
@@ -89,13 +90,10 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
         items,
       });
 
-      console.log("调用云函数 generateReturnExcel");
-      console.log("mode:", mode);
-      console.log("customerCode:", customerCode);
-      console.log("customerName:", customerName);
+      const userInfo = Taro.getStorageSync("userInfo");
       const res = await Taro.cloud.callFunction({
         name: "generateReturnExcel",
-        data: { mode, customerCode, customerName, items },
+        data: { userId: userInfo._id, mode, customerCode, customerName, items },
       });
 
       const result = res.result as CloudFunctionResponse;
@@ -151,7 +149,7 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
         mode={mode}
         items={itemList.map((item) => ({
           ...item,
-          badCount: typeof item.badCount === "number" ? item.badCount : 0,
+          badCount: typeof item.badCount === "string" ? item.badCount : 0,
         }))}
         updateCount={(index, field, val) => {
           const newList = [...itemList];

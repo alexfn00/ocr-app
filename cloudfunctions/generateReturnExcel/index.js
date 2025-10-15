@@ -21,7 +21,7 @@ function formatDate(date = new Date()) {
 exports.main = async (event, context) => {
   try {
     const { OPENID } = cloud.getWXContext();
-    const { mode, customerCode, customerName, items } = event;
+    const { userId, mode, customerCode, customerName, items } = event;
     const discount = 1; // 暂时不需要折扣
     const returnOrderNo = "";
 
@@ -111,6 +111,7 @@ exports.main = async (event, context) => {
     await db.collection('returnExcelList').add({
       data: {
         openid: OPENID,
+        userId,
         fileName: urlRes.fileName,
         fileID,
         downloadUrl: urlRes.fileList[0].tempFileURL,
