@@ -5,9 +5,8 @@ import { Popup, Cell, Input, Button } from "@nutui/nutui-react-taro";
 
 export interface Customer {
   _id: string;
-  客户名称: string;
-  客户编码: string;
-  折扣: string;
+  id: string;
+  name: string;
 }
 
 interface CustomerSelectProps {
@@ -42,7 +41,7 @@ const CustomerSelect = ({
           page: pageNum,
           pageSize,
           keyword: searchKey,
-          publisher: userInfo?.company || "",
+          publisher: userInfo?.publisher || "",
         },
       });
       const result = res.result as any;
@@ -95,7 +94,7 @@ const CustomerSelect = ({
     <View>
       <Cell
         title="客户"
-        extra={value?.客户名称 || placeholder}
+        extra={value?.name || placeholder}
         onClick={openPopup}
       />
 
@@ -152,8 +151,8 @@ const CustomerSelect = ({
           {customers.map((c) => (
             <Cell
               key={c._id}
-              title={c.客户名称}
-              extra={c.客户编码}
+              title={c.name}
+              extra={c.id}
               onClick={() => handleSelect(c)}
             />
           ))}

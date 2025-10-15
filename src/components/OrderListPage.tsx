@@ -76,7 +76,7 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
   const generateExcel = async (
     customerCode: string,
     customerName: string,
-    discount: string,
+    // discount: string,
     items: BookItem[]
   ) => {
     try {
@@ -85,13 +85,17 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
         mode,
         customerCode,
         customerName,
-        discount,
+        // discount,
         items,
       });
 
+      console.log("调用云函数 generateReturnExcel");
+      console.log("mode:", mode);
+      console.log("customerCode:", customerCode);
+      console.log("customerName:", customerName);
       const res = await Taro.cloud.callFunction({
         name: "generateReturnExcel",
-        data: { mode, customerCode, customerName, discount, items },
+        data: { mode, customerCode, customerName, items },
       });
 
       const result = res.result as CloudFunctionResponse;
@@ -187,9 +191,8 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
             console.log("selectedCustomer:", selectedCustomer);
             console.log("itemList:", itemList);
             const fileID = await generateExcel(
-              selectedCustomer.客户编码,
-              selectedCustomer.客户名称,
-              selectedCustomer.折扣,
+              selectedCustomer.id.trim(),
+              selectedCustomer.name.trim(),
               itemList
             );
             if (fileID) setGeneratedFileID(fileID);

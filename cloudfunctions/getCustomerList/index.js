@@ -13,9 +13,9 @@ exports.main = async (event, context) => {
       };
     }
     const skip = (page - 1) * pageSize;
-    const conditions = { 出版社: publisher };
+    const conditions = { publisher: publisher };
     if (keyword && keyword.trim() !== "") {
-      conditions['客户名称'] = db.RegExp({
+      conditions['publisher'] = db.RegExp({
         regexp: `.*${keyword.trim()}.*`,
         options: 'i'
       });

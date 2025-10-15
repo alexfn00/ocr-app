@@ -6,7 +6,7 @@ const _ = db.command;
 const escapeRegExp = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 exports.main = async (event, context) => {
-  const { isbn } = event
+  const { isbn, publisher } = event
 
   if (!isbn) {
     return {
@@ -14,28 +14,32 @@ exports.main = async (event, context) => {
       message: '缺少查询条件',
     }
   }
-
+  console.log('查询条件:', isbn, publisher);
   try {
     const keyword = escapeRegExp(isbn);
-    const res = await db.collection('excelData')
-    .where(
-        _.or([
+    const res = await db.collection('books')
+      .where(
+        _.and([
+          _.or([
+            {
+              isbn: db.RegExp({
+                regexp: `.*${keyword}.*`,
+                options: "i",
+              }),
+            },
+            {
+              title: db.RegExp({
+                regexp: `.*${keyword}.*`,
+                options: "i",
+              }),
+            }
+          ]),
           {
-            normISBN: db.RegExp({
-              regexp: `.*${keyword}.*`,
-              options: "i",
-            }),
-          },
-          {
-            书名: db.RegExp({
-              regexp: `.*${keyword}.*`,
-              options: "i",
-            }),
+            publisher: publisher  // 精确匹配
           }
         ])
-      )
-    .get();
-
+      ).get();
+      
     if (res.data.length > 0) {
       return {
         code: 0,

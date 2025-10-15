@@ -3,11 +3,10 @@ import { View, Text } from "@tarojs/components";
 import styles from "./BookList.module.scss";
 
 interface Book {
-  书名: string;
-  作者: string;
-  ISBN: string;
-  normISBN: string;
-  定价?: string | number;
+  title: string;
+  author: string;
+  isbn: string;
+  price?: string | number;
 }
 
 interface BookListProps {
@@ -32,14 +31,12 @@ const BookList: React.FC<BookListProps> = ({
           onClick={() => onSelect(index)}
         >
           <View className={styles.cardHeader}>
-            <Text className={styles.cardTitle}>{book.书名}</Text>
-            <Text className={styles.cardExtra}>{book.作者}</Text>
+            <Text className={styles.cardTitle}>{book.title}</Text>
+            <Text className={styles.cardExtra}>{book.author}</Text>
           </View>
-          <View className={styles.cardNote}>
-            ISBN: {book.ISBN ? book.ISBN : book.normISBN}
-          </View>
+          <View className={styles.cardNote}>ISBN: {book.isbn}</View>
           <View className={styles.cardBody}>
-            <Text>定价：{book.定价 ?? "暂无"}</Text>
+            <Text>定价：{book.price ?? "暂无"}</Text>
           </View>
         </View>
       ))}

@@ -109,11 +109,11 @@ const BookActionPanel: React.FC<BookActionPanelProps> = ({
     }
 
     const newItem = {
-      isbn: selectedBook.normISBN || "",
-      publiser: selectedBook.publiser || "",
-      title: selectedBook.书名 || "",
-      author: selectedBook.作者 || "",
-      price: selectedBook.定价 || 0,
+      isbn: selectedBook.isbn || "",
+      publisher: selectedBook.publisher || "",
+      title: selectedBook.title || "",
+      author: selectedBook.author || "",
+      price: selectedBook.price || 0,
       count: goodCount,
       badCount: badCount,
     };

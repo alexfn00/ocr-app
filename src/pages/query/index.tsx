@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Taro from "@tarojs/taro";
+import Taro, { useDidShow } from "@tarojs/taro";
 import { View, Text } from "@tarojs/components";
 import { Button, Input } from "@nutui/nutui-react-taro";
 import "./index.scss";
@@ -18,9 +18,16 @@ const QueryPage = () => {
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>(null);
 
   useAuthGuard();
 
+  useDidShow(() => {
+    const user = Taro.getStorageSync("userInfo");
+    if (user) {
+      setUserInfo(user);
+    }
+  });
   // 扫描条码
   const handleScan = async () => {
     setLoading(true);
@@ -47,13 +54,19 @@ const QueryPage = () => {
   const fetchBooksByIsbn = async (isbn: string) => {
     try {
       Taro.showLoading({ title: "查询中..." });
-
+      console.log(
+        "查询图书，ISBN:",
+        isbn,
+        "出版社:",
+        userInfo?.publisher || ""
+      );
       const res = await Taro.cloud.callFunction({
         name: "queryBook",
-        data: { isbn },
+        data: { isbn, publisher: userInfo?.publisher || "" },
       });
 
       const result = res.result;
+      console.log("查询结果:", result);
       if (
         result &&
         typeof result === "object" &&
@@ -61,6 +74,7 @@ const QueryPage = () => {
         (result as any).code === 0
       ) {
         const data = (result as any).data;
+        console.log("图书数据:", data);
         setBooks(data);
 
         if (data.length === 1) {

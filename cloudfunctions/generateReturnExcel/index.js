@@ -21,7 +21,8 @@ function formatDate(date = new Date()) {
 exports.main = async (event, context) => {
   try {
     const { OPENID } = cloud.getWXContext();
-    const { mode, customerCode, customerName, discount, items } = event;
+    const { mode, customerCode, customerName, items } = event;
+    const discount = 1; // 暂时不需要折扣
     const returnOrderNo = "";
 
     if (mode != "return" && mode != "order") {
