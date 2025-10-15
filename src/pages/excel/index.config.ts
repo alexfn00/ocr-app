@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: '分享示例',
+  navigationBarTitleText: 'Excel文件',
 })
