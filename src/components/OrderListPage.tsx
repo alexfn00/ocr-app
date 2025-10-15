@@ -65,8 +65,8 @@ export default function OrderListPage({ title, mode }: OrderListPageProps) {
       success: (res) => {
         if (res.confirm) {
           saveList([]);
-          if (mode === "return") updateBadge(0, 2);
-          else updateBadge(0, 1);
+          if (mode === "return") updateBadge(0, 1);
+          else updateBadge(0, 2);
           Taro.showToast({ title: "已清空", icon: "success" });
         }
       },
